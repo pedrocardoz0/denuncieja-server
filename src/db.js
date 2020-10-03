@@ -3,7 +3,7 @@ let users = [{
     name: 'Pedro',
     email: 'p-cardozo@hotmail.com',
     age: 19
-}]
+},]
 
 let posts = [{
     id: '1',
