@@ -4,6 +4,7 @@ import Query from './resolvers/Query';
 import Mutation from './resolvers/Mutation';
 import User from './resolvers/User';
 import Post from './resolvers/Post';
+import { prisma } from '../prisma/generated/prisma-client';
 
 const server = new GraphQLServer({
     typeDefs: './src/schema.graphql',
@@ -15,6 +16,7 @@ const server = new GraphQLServer({
     },
     context: {
         db,
+        prisma
     },
 });
 

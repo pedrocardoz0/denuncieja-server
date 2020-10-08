@@ -1,6 +1,6 @@
 const Query = {
-    users(parent, args, { db }, info) {
-        return db.users
+    async users(parent, args, { prisma }, info) {
+        return await prisma.users()
     },
     posts(parent, args, { db }, info) {
         return db.posts
