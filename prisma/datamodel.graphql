@@ -8,6 +8,7 @@ type User {
   email: String!
   password: String!
   posts: [Post!]! @relation (name: "PostToUser", onDelete: CASCADE)
+  comments: [Comment!]! @relation (name: "CommentToUser", onDelete: CASCADE)
   updatedAt: DateTime! @updatedAt
   createdAt: DateTime! @createdAt
 }
@@ -17,9 +18,19 @@ type Post {
   title: String!
   body: String!
   author: User! @relation (name: "PostToUser", onDelete: SET_NULL)
+  comments: [Comment!]! @relation (name: "CommentToPost", onDelete: CASCADE)
   published: Boolean!
   city: String!
   region: String!
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
+}
+
+type Comment {
+  id: ID! @unique @id
+  text: String!
+  author: User! @relation (name: "CommentToUser", onDelete: SET_NULL)
+  posts: Post! @relation (name: "CommentToPost", onDelete: SET_NULL)
   updatedAt: DateTime! @updatedAt
   createdAt: DateTime! @createdAt
 }
