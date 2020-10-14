@@ -3,7 +3,11 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregateComment {
+/* GraphQL */ `type AggregateCity {
+  count: Int!
+}
+
+type AggregateComment {
   count: Int!
 }
 
@@ -17,6 +21,171 @@ type AggregateUser {
 
 type BatchPayload {
   count: Long!
+}
+
+type City {
+  id: ID!
+  name: String!
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+}
+
+type CityConnection {
+  pageInfo: PageInfo!
+  edges: [CityEdge]!
+  aggregate: AggregateCity!
+}
+
+input CityCreateInput {
+  id: ID
+  name: String!
+  users: UserCreateManyWithoutCityInput
+  posts: PostCreateManyWithoutCityInput
+}
+
+input CityCreateOneWithoutPostsInput {
+  create: CityCreateWithoutPostsInput
+  connect: CityWhereUniqueInput
+}
+
+input CityCreateOneWithoutUsersInput {
+  create: CityCreateWithoutUsersInput
+  connect: CityWhereUniqueInput
+}
+
+input CityCreateWithoutPostsInput {
+  id: ID
+  name: String!
+  users: UserCreateManyWithoutCityInput
+}
+
+input CityCreateWithoutUsersInput {
+  id: ID
+  name: String!
+  posts: PostCreateManyWithoutCityInput
+}
+
+type CityEdge {
+  node: City!
+  cursor: String!
+}
+
+enum CityOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type CityPreviousValues {
+  id: ID!
+  name: String!
+}
+
+type CitySubscriptionPayload {
+  mutation: MutationType!
+  node: City
+  updatedFields: [String!]
+  previousValues: CityPreviousValues
+}
+
+input CitySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CityWhereInput
+  AND: [CitySubscriptionWhereInput!]
+  OR: [CitySubscriptionWhereInput!]
+  NOT: [CitySubscriptionWhereInput!]
+}
+
+input CityUpdateInput {
+  name: String
+  users: UserUpdateManyWithoutCityInput
+  posts: PostUpdateManyWithoutCityInput
+}
+
+input CityUpdateManyMutationInput {
+  name: String
+}
+
+input CityUpdateOneRequiredWithoutPostsInput {
+  create: CityCreateWithoutPostsInput
+  update: CityUpdateWithoutPostsDataInput
+  upsert: CityUpsertWithoutPostsInput
+  connect: CityWhereUniqueInput
+}
+
+input CityUpdateOneRequiredWithoutUsersInput {
+  create: CityCreateWithoutUsersInput
+  update: CityUpdateWithoutUsersDataInput
+  upsert: CityUpsertWithoutUsersInput
+  connect: CityWhereUniqueInput
+}
+
+input CityUpdateWithoutPostsDataInput {
+  name: String
+  users: UserUpdateManyWithoutCityInput
+}
+
+input CityUpdateWithoutUsersDataInput {
+  name: String
+  posts: PostUpdateManyWithoutCityInput
+}
+
+input CityUpsertWithoutPostsInput {
+  update: CityUpdateWithoutPostsDataInput!
+  create: CityCreateWithoutPostsInput!
+}
+
+input CityUpsertWithoutUsersInput {
+  update: CityUpdateWithoutUsersDataInput!
+  create: CityCreateWithoutUsersInput!
+}
+
+input CityWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  users_every: UserWhereInput
+  users_some: UserWhereInput
+  users_none: UserWhereInput
+  posts_every: PostWhereInput
+  posts_some: PostWhereInput
+  posts_none: PostWhereInput
+  AND: [CityWhereInput!]
+  OR: [CityWhereInput!]
+  NOT: [CityWhereInput!]
+}
+
+input CityWhereUniqueInput {
+  id: ID
 }
 
 type Comment {
@@ -290,6 +459,12 @@ scalar DateTime
 scalar Long
 
 type Mutation {
+  createCity(data: CityCreateInput!): City!
+  updateCity(data: CityUpdateInput!, where: CityWhereUniqueInput!): City
+  updateManyCities(data: CityUpdateManyMutationInput!, where: CityWhereInput): BatchPayload!
+  upsertCity(where: CityWhereUniqueInput!, create: CityCreateInput!, update: CityUpdateInput!): City!
+  deleteCity(where: CityWhereUniqueInput!): City
+  deleteManyCities(where: CityWhereInput): BatchPayload!
   createComment(data: CommentCreateInput!): Comment!
   updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
   updateManyComments(data: CommentUpdateManyMutationInput!, where: CommentWhereInput): BatchPayload!
@@ -334,7 +509,7 @@ type Post {
   author: User!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
   published: Boolean!
-  city: String!
+  city: City!
   region: String!
   updatedAt: DateTime!
   createdAt: DateTime!
@@ -353,12 +528,17 @@ input PostCreateInput {
   author: UserCreateOneWithoutPostsInput!
   comments: CommentCreateManyWithoutPostsInput
   published: Boolean!
-  city: String!
+  city: CityCreateOneWithoutPostsInput!
   region: String!
 }
 
 input PostCreateManyWithoutAuthorInput {
   create: [PostCreateWithoutAuthorInput!]
+  connect: [PostWhereUniqueInput!]
+}
+
+input PostCreateManyWithoutCityInput {
+  create: [PostCreateWithoutCityInput!]
   connect: [PostWhereUniqueInput!]
 }
 
@@ -373,7 +553,17 @@ input PostCreateWithoutAuthorInput {
   body: String!
   comments: CommentCreateManyWithoutPostsInput
   published: Boolean!
-  city: String!
+  city: CityCreateOneWithoutPostsInput!
+  region: String!
+}
+
+input PostCreateWithoutCityInput {
+  id: ID
+  title: String!
+  body: String!
+  author: UserCreateOneWithoutPostsInput!
+  comments: CommentCreateManyWithoutPostsInput
+  published: Boolean!
   region: String!
 }
 
@@ -383,7 +573,7 @@ input PostCreateWithoutCommentsInput {
   body: String!
   author: UserCreateOneWithoutPostsInput!
   published: Boolean!
-  city: String!
+  city: CityCreateOneWithoutPostsInput!
   region: String!
 }
 
@@ -401,8 +591,6 @@ enum PostOrderByInput {
   body_DESC
   published_ASC
   published_DESC
-  city_ASC
-  city_DESC
   region_ASC
   region_DESC
   updatedAt_ASC
@@ -416,7 +604,6 @@ type PostPreviousValues {
   title: String!
   body: String!
   published: Boolean!
-  city: String!
   region: String!
   updatedAt: DateTime!
   createdAt: DateTime!
@@ -467,20 +654,6 @@ input PostScalarWhereInput {
   body_not_ends_with: String
   published: Boolean
   published_not: Boolean
-  city: String
-  city_not: String
-  city_in: [String!]
-  city_not_in: [String!]
-  city_lt: String
-  city_lte: String
-  city_gt: String
-  city_gte: String
-  city_contains: String
-  city_not_contains: String
-  city_starts_with: String
-  city_not_starts_with: String
-  city_ends_with: String
-  city_not_ends_with: String
   region: String
   region_not: String
   region_in: [String!]
@@ -540,7 +713,7 @@ input PostUpdateInput {
   author: UserUpdateOneRequiredWithoutPostsInput
   comments: CommentUpdateManyWithoutPostsInput
   published: Boolean
-  city: String
+  city: CityUpdateOneRequiredWithoutPostsInput
   region: String
 }
 
@@ -548,7 +721,6 @@ input PostUpdateManyDataInput {
   title: String
   body: String
   published: Boolean
-  city: String
   region: String
 }
 
@@ -556,7 +728,6 @@ input PostUpdateManyMutationInput {
   title: String
   body: String
   published: Boolean
-  city: String
   region: String
 }
 
@@ -568,6 +739,18 @@ input PostUpdateManyWithoutAuthorInput {
   disconnect: [PostWhereUniqueInput!]
   update: [PostUpdateWithWhereUniqueWithoutAuthorInput!]
   upsert: [PostUpsertWithWhereUniqueWithoutAuthorInput!]
+  deleteMany: [PostScalarWhereInput!]
+  updateMany: [PostUpdateManyWithWhereNestedInput!]
+}
+
+input PostUpdateManyWithoutCityInput {
+  create: [PostCreateWithoutCityInput!]
+  delete: [PostWhereUniqueInput!]
+  connect: [PostWhereUniqueInput!]
+  set: [PostWhereUniqueInput!]
+  disconnect: [PostWhereUniqueInput!]
+  update: [PostUpdateWithWhereUniqueWithoutCityInput!]
+  upsert: [PostUpsertWithWhereUniqueWithoutCityInput!]
   deleteMany: [PostScalarWhereInput!]
   updateMany: [PostUpdateManyWithWhereNestedInput!]
 }
@@ -589,7 +772,16 @@ input PostUpdateWithoutAuthorDataInput {
   body: String
   comments: CommentUpdateManyWithoutPostsInput
   published: Boolean
-  city: String
+  city: CityUpdateOneRequiredWithoutPostsInput
+  region: String
+}
+
+input PostUpdateWithoutCityDataInput {
+  title: String
+  body: String
+  author: UserUpdateOneRequiredWithoutPostsInput
+  comments: CommentUpdateManyWithoutPostsInput
+  published: Boolean
   region: String
 }
 
@@ -598,13 +790,18 @@ input PostUpdateWithoutCommentsDataInput {
   body: String
   author: UserUpdateOneRequiredWithoutPostsInput
   published: Boolean
-  city: String
+  city: CityUpdateOneRequiredWithoutPostsInput
   region: String
 }
 
 input PostUpdateWithWhereUniqueWithoutAuthorInput {
   where: PostWhereUniqueInput!
   data: PostUpdateWithoutAuthorDataInput!
+}
+
+input PostUpdateWithWhereUniqueWithoutCityInput {
+  where: PostWhereUniqueInput!
+  data: PostUpdateWithoutCityDataInput!
 }
 
 input PostUpsertWithoutCommentsInput {
@@ -616,6 +813,12 @@ input PostUpsertWithWhereUniqueWithoutAuthorInput {
   where: PostWhereUniqueInput!
   update: PostUpdateWithoutAuthorDataInput!
   create: PostCreateWithoutAuthorInput!
+}
+
+input PostUpsertWithWhereUniqueWithoutCityInput {
+  where: PostWhereUniqueInput!
+  update: PostUpdateWithoutCityDataInput!
+  create: PostCreateWithoutCityInput!
 }
 
 input PostWhereInput {
@@ -667,20 +870,7 @@ input PostWhereInput {
   comments_none: CommentWhereInput
   published: Boolean
   published_not: Boolean
-  city: String
-  city_not: String
-  city_in: [String!]
-  city_not_in: [String!]
-  city_lt: String
-  city_lte: String
-  city_gt: String
-  city_gte: String
-  city_contains: String
-  city_not_contains: String
-  city_starts_with: String
-  city_not_starts_with: String
-  city_ends_with: String
-  city_not_ends_with: String
+  city: CityWhereInput
   region: String
   region_not: String
   region_in: [String!]
@@ -721,6 +911,9 @@ input PostWhereUniqueInput {
 }
 
 type Query {
+  city(where: CityWhereUniqueInput!): City
+  cities(where: CityWhereInput, orderBy: CityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [City]!
+  citiesConnection(where: CityWhereInput, orderBy: CityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CityConnection!
   comment(where: CommentWhereUniqueInput!): Comment
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
   commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
@@ -734,6 +927,7 @@ type Query {
 }
 
 type Subscription {
+  city(where: CitySubscriptionWhereInput): CitySubscriptionPayload
   comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
@@ -745,7 +939,7 @@ type User {
   age: Int!
   address: String!
   phone: String!
-  city: String!
+  city: City!
   email: String!
   password: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
@@ -766,11 +960,16 @@ input UserCreateInput {
   age: Int!
   address: String!
   phone: String!
-  city: String!
+  city: CityCreateOneWithoutUsersInput!
   email: String!
   password: String!
   posts: PostCreateManyWithoutAuthorInput
   comments: CommentCreateManyWithoutAuthorInput
+}
+
+input UserCreateManyWithoutCityInput {
+  create: [UserCreateWithoutCityInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input UserCreateOneWithoutCommentsInput {
@@ -783,13 +982,25 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateWithoutCityInput {
+  id: ID
+  name: String!
+  age: Int!
+  address: String!
+  phone: String!
+  email: String!
+  password: String!
+  posts: PostCreateManyWithoutAuthorInput
+  comments: CommentCreateManyWithoutAuthorInput
+}
+
 input UserCreateWithoutCommentsInput {
   id: ID
   name: String!
   age: Int!
   address: String!
   phone: String!
-  city: String!
+  city: CityCreateOneWithoutUsersInput!
   email: String!
   password: String!
   posts: PostCreateManyWithoutAuthorInput
@@ -801,7 +1012,7 @@ input UserCreateWithoutPostsInput {
   age: Int!
   address: String!
   phone: String!
-  city: String!
+  city: CityCreateOneWithoutUsersInput!
   email: String!
   password: String!
   comments: CommentCreateManyWithoutAuthorInput
@@ -823,8 +1034,6 @@ enum UserOrderByInput {
   address_DESC
   phone_ASC
   phone_DESC
-  city_ASC
-  city_DESC
   email_ASC
   email_DESC
   password_ASC
@@ -841,11 +1050,124 @@ type UserPreviousValues {
   age: Int!
   address: String!
   phone: String!
-  city: String!
   email: String!
   password: String!
   updatedAt: DateTime!
   createdAt: DateTime!
+}
+
+input UserScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  age: Int
+  age_not: Int
+  age_in: [Int!]
+  age_not_in: [Int!]
+  age_lt: Int
+  age_lte: Int
+  age_gt: Int
+  age_gte: Int
+  address: String
+  address_not: String
+  address_in: [String!]
+  address_not_in: [String!]
+  address_lt: String
+  address_lte: String
+  address_gt: String
+  address_gte: String
+  address_contains: String
+  address_not_contains: String
+  address_starts_with: String
+  address_not_starts_with: String
+  address_ends_with: String
+  address_not_ends_with: String
+  phone: String
+  phone_not: String
+  phone_in: [String!]
+  phone_not_in: [String!]
+  phone_lt: String
+  phone_lte: String
+  phone_gt: String
+  phone_gte: String
+  phone_contains: String
+  phone_not_contains: String
+  phone_starts_with: String
+  phone_not_starts_with: String
+  phone_ends_with: String
+  phone_not_ends_with: String
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  password: String
+  password_not: String
+  password_in: [String!]
+  password_not_in: [String!]
+  password_lt: String
+  password_lte: String
+  password_gt: String
+  password_gte: String
+  password_contains: String
+  password_not_contains: String
+  password_starts_with: String
+  password_not_starts_with: String
+  password_ends_with: String
+  password_not_ends_with: String
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [UserScalarWhereInput!]
+  OR: [UserScalarWhereInput!]
+  NOT: [UserScalarWhereInput!]
 }
 
 type UserSubscriptionPayload {
@@ -871,11 +1193,20 @@ input UserUpdateInput {
   age: Int
   address: String
   phone: String
-  city: String
+  city: CityUpdateOneRequiredWithoutUsersInput
   email: String
   password: String
   posts: PostUpdateManyWithoutAuthorInput
   comments: CommentUpdateManyWithoutAuthorInput
+}
+
+input UserUpdateManyDataInput {
+  name: String
+  age: Int
+  address: String
+  phone: String
+  email: String
+  password: String
 }
 
 input UserUpdateManyMutationInput {
@@ -883,9 +1214,25 @@ input UserUpdateManyMutationInput {
   age: Int
   address: String
   phone: String
-  city: String
   email: String
   password: String
+}
+
+input UserUpdateManyWithoutCityInput {
+  create: [UserCreateWithoutCityInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutCityInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutCityInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+}
+
+input UserUpdateManyWithWhereNestedInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyDataInput!
 }
 
 input UserUpdateOneRequiredWithoutCommentsInput {
@@ -902,12 +1249,23 @@ input UserUpdateOneRequiredWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserUpdateWithoutCityDataInput {
+  name: String
+  age: Int
+  address: String
+  phone: String
+  email: String
+  password: String
+  posts: PostUpdateManyWithoutAuthorInput
+  comments: CommentUpdateManyWithoutAuthorInput
+}
+
 input UserUpdateWithoutCommentsDataInput {
   name: String
   age: Int
   address: String
   phone: String
-  city: String
+  city: CityUpdateOneRequiredWithoutUsersInput
   email: String
   password: String
   posts: PostUpdateManyWithoutAuthorInput
@@ -918,10 +1276,15 @@ input UserUpdateWithoutPostsDataInput {
   age: Int
   address: String
   phone: String
-  city: String
+  city: CityUpdateOneRequiredWithoutUsersInput
   email: String
   password: String
   comments: CommentUpdateManyWithoutAuthorInput
+}
+
+input UserUpdateWithWhereUniqueWithoutCityInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutCityDataInput!
 }
 
 input UserUpsertWithoutCommentsInput {
@@ -932,6 +1295,12 @@ input UserUpsertWithoutCommentsInput {
 input UserUpsertWithoutPostsInput {
   update: UserUpdateWithoutPostsDataInput!
   create: UserCreateWithoutPostsInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutCityInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutCityDataInput!
+  create: UserCreateWithoutCityInput!
 }
 
 input UserWhereInput {
@@ -999,20 +1368,7 @@ input UserWhereInput {
   phone_not_starts_with: String
   phone_ends_with: String
   phone_not_ends_with: String
-  city: String
-  city_not: String
-  city_in: [String!]
-  city_not_in: [String!]
-  city_lt: String
-  city_lte: String
-  city_gt: String
-  city_gte: String
-  city_contains: String
-  city_not_contains: String
-  city_starts_with: String
-  city_not_starts_with: String
-  city_ends_with: String
-  city_not_ends_with: String
+  city: CityWhereInput
   email: String
   email_not: String
   email_in: [String!]
